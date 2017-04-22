@@ -12,5 +12,22 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+    <SeekBar
+        android:id="@+id/seek_bar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:max="100"
+        android:progress="0"
+        android:secondaryProgress="5" />
+    <!--android:progressDrawable="@drawable/progressbar"-->
+    <TextView
+        android:id="@+id/progess_textview"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textSize="10pt"
+        android:textColor="@color/black"
+        />
 
 </android.support.design.widget.CoordinatorLayout>

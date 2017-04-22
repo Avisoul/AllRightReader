@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -21,6 +23,7 @@ import com.github.mertakdut.exception.ReadingException;
 public class ReadActivity extends AppCompatActivity implements PageFragment.OnFragmentReadyListener {
 
         private Reader reader;
+        private SeekBar pageControl = null;
 
         private ViewPager mViewPager;
 
@@ -36,6 +39,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
 
         private int pageCount = Integer.MAX_VALUE;
         private int pxScreenWidth;
+        private TextView progressTextview;
 
         private boolean isSkippedToPage = false;
 
@@ -44,6 +48,8 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_read);
 //            getActionBar().hide();
+
+            progressTextview = (TextView)findViewById(R.id.progess_textview);
 
             pxScreenWidth = getResources().getDisplayMetrics().widthPixels;
 
@@ -78,7 +84,48 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                 } catch (ReadingException e) {
                     Toast.makeText(ReadActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                 }
+
+                pageControl = (SeekBar) findViewById(R.id.seek_bar);
+                pageControl.setMax(getMaxPageNumber());
+                try {
+                    pageControl.setProgress(reader.loadProgress());
+                    progressTextview.setText(String.valueOf(reader.loadProgress()));
+                } catch (ReadingException e) {
+                    e.printStackTrace();
+                }
+                pageControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    int progressChanged = 0;
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                         progressChanged = progress;
+                        progressTextview.setText(String.valueOf(progressChanged));
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        //Toast.makeText(ReadActivity.this, String.valueOf(progressChanged), Toast.LENGTH_SHORT).show();
+                        mViewPager.setCurrentItem(progressChanged);
+                    }
+
+                });
             }
+        }
+
+        private int getMaxPageNumber() {
+            int maxPageNumber = 100;
+            try {
+                BookSection bookSection = reader.readSection(Integer.MAX_VALUE);
+            } catch (OutOfPagesException e) {
+                e.printStackTrace();
+                maxPageNumber = e.getPageCount();
+            } catch (Exception e) {
+            }
+            return maxPageNumber;
         }
 
         @Override
