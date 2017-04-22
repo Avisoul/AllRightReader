@@ -66,7 +66,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                     reader = new Reader();
 
                     // Setting optionals once per file is enough.
-                    reader.setMaxContentPerSection(1000);
+                    reader.setMaxContentPerSection(1250);
                     reader.setCssStatus(CssStatus.INCLUDE);
                     reader.setIsIncludingTextContent(true);
                     reader.setIsOmittingTitleTag(true);
@@ -86,7 +86,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                 }
 
                 pageControl = (SeekBar) findViewById(R.id.seek_bar);
-                pageControl.setMax(getMaxPageNumber());
+                pageControl.setMax(getMaxPageNumber()-1);
                 try {
                     pageControl.setProgress(reader.loadProgress());
                     progressTextview.setText(String.valueOf(reader.loadProgress()));
@@ -110,8 +110,9 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                     public void onStopTrackingTouch(SeekBar seekBar) {
                         //Toast.makeText(ReadActivity.this, String.valueOf(progressChanged), Toast.LENGTH_SHORT).show();
                         mViewPager.setCurrentItem(progressChanged);
+                        progressTextview.setText(String.valueOf(mViewPager.getCurrentItem()));
+                        pageControl.setProgress(mViewPager.getCurrentItem());
                     }
-
                 });
             }
         }
@@ -135,6 +136,8 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
 
             try {
                 bookSection = reader.readSection(position);
+                progressTextview.setText(String.valueOf(mViewPager.getCurrentItem()));
+                pageControl.setProgress(mViewPager.getCurrentItem());
             } catch (ReadingException e) {
                 e.printStackTrace();
                 Toast.makeText(ReadActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
