@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AllRightReader</string>
+
+    <string name="title_activity_read">ReadActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
