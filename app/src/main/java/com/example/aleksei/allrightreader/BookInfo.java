@@ -1,9 +1,9 @@
-package com.example.aleksei.allrightreader.BookManager;
+package com.example.aleksei.allrightreader;
 
 import android.graphics.Bitmap;
 
 /**
- * Created by Aleksei on 22.04.2017.
+ * Created by Evgenia on 22.04.2017.
  */
 
 public class BookInfo {

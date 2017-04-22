@@ -1,4 +1,8 @@
-package com.example.aleksei.allrightreader.BookManager;
+package com.example.aleksei.allrightreader;
+
+/**
+ * Created by Evgenia on 22.04.2017.
+ */
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,12 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
-
-import com.example.aleksei.allrightreader.R;
-
-/**
- * Created by Aleksei on 22.04.2017.
- */
 
 public class PageFragment extends Fragment {
     /**
