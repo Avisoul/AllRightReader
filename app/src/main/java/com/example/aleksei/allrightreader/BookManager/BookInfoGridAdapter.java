@@ -1,4 +1,4 @@
-package com.example.aleksei.allrightreader;
+package com.example.aleksei.allrightreader.BookManager;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.aleksei.allrightreader.BookManager.BookInfo;
+import com.example.aleksei.allrightreader.R;
 
 import java.util.List;
 
@@ -84,11 +87,11 @@ public class BookInfoGridAdapter extends BaseAdapter {
                     viewHolder.coverImage.setImageBitmap(bitmap);
                 } else { // Searched and not found.
                     bookInfoList.get(position).setCoverImageNotExists(true);
-                    viewHolder.coverImage.setImageResource(android.R.drawable.alert_light_frame);
+                    viewHolder.coverImage.setImageResource(R.drawable.default_book);
                 }
             }
         } else { // Searched before and not found.
-            viewHolder.coverImage.setImageResource(android.R.drawable.alert_light_frame);
+            viewHolder.coverImage.setImageResource(R.drawable.default_book);
         }
 
         return convertView;

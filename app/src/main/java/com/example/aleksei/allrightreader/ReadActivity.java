@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Base64;
 import android.util.DisplayMetrics;
-import android.util.StringBuilderPrinter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -25,10 +24,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.aleksei.allrightreader.BookManager.PageFragment;
 import com.github.mertakdut.BookSection;
 import com.github.mertakdut.CssStatus;
 import com.github.mertakdut.Reader;
-import com.github.mertakdut.Toc;
 import com.github.mertakdut.exception.OutOfPagesException;
 import com.github.mertakdut.exception.ReadingException;
 
@@ -90,9 +89,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
 
                     // This method must be called before readSection.
                     reader.setFullContent(filePath);
-                    Toc toc = new Toc();
-                    toc = reader.getToc();
-                    toc.getNavMap();
+
 
 //                int lastSavedPage = reader.setFullContentWithProgress(filePath);
                     if (reader.isSavedProgressFound()) {

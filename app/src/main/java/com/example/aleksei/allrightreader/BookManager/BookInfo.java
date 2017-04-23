@@ -1,4 +1,4 @@
-package com.example.aleksei.allrightreader;
+package com.example.aleksei.allrightreader.BookManager;
 
 import android.graphics.Bitmap;
 

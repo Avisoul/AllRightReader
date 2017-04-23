@@ -10,7 +10,7 @@
         android:layout_centerHorizontal="true"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        android:src="@android:drawable/alert_light_frame" />
+        android:src="@drawable/default_book" />
 
     <TextView
         android:id="@+id/txt_book_title"

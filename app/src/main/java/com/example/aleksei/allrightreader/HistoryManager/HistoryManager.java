@@ -5,4 +5,5 @@ package com.example.aleksei.allrightreader.HistoryManager;
  */
 
 public class HistoryManager {
+    //TODO implement it
 }
