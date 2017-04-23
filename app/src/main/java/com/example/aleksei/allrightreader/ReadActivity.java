@@ -128,7 +128,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
 
         private String getPercentage(int count) {
             StringBuilder sb = new StringBuilder();
-            double percentage = Math.round(((double)count * 10000)/((double)getMaxPageNumber()))/100;
+            double percentage = Math.round(((double)count * 1000)/((double)getMaxPageNumber()))/((double)10);
             sb.append(String.valueOf(percentage));
             sb.append(" %");
             return  sb.toString();
