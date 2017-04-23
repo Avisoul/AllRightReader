@@ -8,26 +8,61 @@
     android:theme="@style/AppTheme.AppBarOverlay"
     tools:context="com.example.aleksei.allrightreader.ReadActivity">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/container"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-    <SeekBar
-        android:id="@+id/seek_bar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:max="100"
-        android:progress="0"
-        android:secondaryProgress="5" />
-    <!--android:progressDrawable="@drawable/progressbar"-->
-    <TextView
-        android:id="@+id/progess_textview"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:textSize="10pt"
-        android:textColor="@color/black"
-        />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/progess_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="1dp"
+                    android:textSize="7pt"
+                    android:textColor="@color/black"/>
+                <LinearLayout
+                    android:id="@+id/seek_bar_view"
+                    android:layout_alignStart="@id/progess_textview"
+                    android:layout_alignLeft="@id/progess_textview"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <SeekBar
+                        android:id="@+id/seek_bar"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="0dp"
+                        android:layout_marginLeft="55dp"
+                        android:layout_marginRight="55dp"
+                        android:secondaryProgress="0" />
+                        <!--android:progressDrawable="@drawable/progressbar"-->
+                </LinearLayout>
+                <TextView
+                    android:id="@+id/percentage_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignRight="@id/seek_bar_view"
+                    android:layout_gravity="right"
+                    android:layout_margin="1dp"
+                    android:textSize="7pt"
+                    android:textColor="@color/black"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>
