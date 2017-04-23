@@ -2,6 +2,7 @@ package com.example.aleksei.allrightreader;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -12,10 +13,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.aleksei.allrightreader.FileManager.DownloadFileActivity;
 import com.github.mertakdut.Reader;
 import com.github.mertakdut.exception.ReadingException;
 
@@ -25,6 +28,7 @@ import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 /**
  * Created by Evgenia on 22.04.2017.
  */
@@ -38,16 +42,25 @@ public class MenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        ((GridView) findViewById(R.id.grid_book_info)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//        ((GridView) findViewById(R.id.grid_book_info)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                String clickedItemFilePath = ((BookInfo) adapterView.getAdapter().getItem(i)).getFilePath();
+//                final Intent intent = new Intent(MenuActivity.this, ReadActivity.class);
+//                intent.putExtra("filePath", clickedItemFilePath);
+//                intent.putExtra("isWebView", true);
+//                startActivity(intent);
+//            }
+//        });
+
+        ((Button) findViewById(R.id.download_from_cloud)).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String clickedItemFilePath = ((BookInfo) adapterView.getAdapter().getItem(i)).getFilePath();
-                final Intent intent = new Intent(MenuActivity.this, ReadActivity.class);
-                intent.putExtra("filePath", clickedItemFilePath);
-                intent.putExtra("isWebView", true);
+            public void onClick(View v) {
+                final Intent intent = new Intent(MenuActivity.this, DownloadFileActivity.class);
                 startActivity(intent);
             }
         });
+
 
         progressBar = (ProgressBar) findViewById(R.id.progressbar);
 
@@ -158,6 +171,7 @@ public class MenuActivity extends AppCompatActivity {
             files.add(1, sampleFile2);
             File sampleFile3 = getFileFromAssets("The Silver Chair.epub");
             files.add(2,sampleFile3);
+
             for (File file : files) {
                 BookInfo bookInfo = new BookInfo();
 

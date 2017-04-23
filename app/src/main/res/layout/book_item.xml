@@ -22,4 +22,16 @@
         android:lines="2"
         android:text="Sample Title" />
 
+    <Button
+        android:id="@+id/upload_to_cloud"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_book_title"
+        android:ellipsize="end"
+        android:gravity="center_horizontal"
+        android:lines="2"
+        android:text="Upload to Cloud"
+        android:onClick="uploadToCloud"/>
+
+
 </RelativeLayout>

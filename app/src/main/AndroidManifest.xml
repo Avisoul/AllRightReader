@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.aleksei.allrightreader">
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,6 +22,12 @@
             android:name=".ReadActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/FullscreenTheme">
+        </activity>
+        <activity
+            android:name=".FileManager.DownloadFileActivity">
+        </activity>
+        <activity
+            android:name=".FileManager.UploadFileActivity">
         </activity>
     </application>
 
