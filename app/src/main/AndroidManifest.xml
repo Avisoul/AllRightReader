@@ -29,6 +29,9 @@
         <activity
             android:name=".FileManager.UploadFileActivity">
         </activity>
+        <activity
+            android:name=".FileManager.FileManager">
+        </activity>
     </application>
 
 </manifest>

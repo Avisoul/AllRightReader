@@ -16,7 +16,7 @@ import android.util.Log;
 import android.widget.Toast;
 import android.net.Uri;
 
-import com.example.aleksei.allrightreader.BookInfo;
+import com.example.aleksei.allrightreader.BookManager.BookInfo;
 import com.example.aleksei.allrightreader.MenuActivity;
 import com.example.aleksei.allrightreader.R;
 import com.example.aleksei.allrightreader.ReadActivity;

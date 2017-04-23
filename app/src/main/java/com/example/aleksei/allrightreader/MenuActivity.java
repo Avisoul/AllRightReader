@@ -21,6 +21,7 @@ import android.widget.ProgressBar;
 import com.example.aleksei.allrightreader.BookManager.BookInfo;
 import com.example.aleksei.allrightreader.BookManager.BookInfoGridAdapter;
 import com.example.aleksei.allrightreader.FileManager.DownloadFileActivity;
+import com.example.aleksei.allrightreader.FileManager.FileManager;
 import com.github.mertakdut.Reader;
 import com.github.mertakdut.exception.ReadingException;
 
