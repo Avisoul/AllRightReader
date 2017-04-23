@@ -124,6 +124,10 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                     }
                 });
             }
+            progressTextview.setText(getProgress(mViewPager.getCurrentItem()));
+            percentageTextview.setText(getPercentage(mViewPager.getCurrentItem()));
+            pageControl.setProgress(mViewPager.getCurrentItem());
+            pageControl.setMax(getMaxPageNumber());
         }
 
         private String getPercentage(int count) {
