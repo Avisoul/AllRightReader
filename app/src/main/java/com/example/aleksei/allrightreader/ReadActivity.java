@@ -181,6 +181,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                 progressTextview.setText(getProgress(mViewPager.getCurrentItem()));
                 percentageTextview.setText(getPercentage(mViewPager.getCurrentItem()));
                 pageControl.setProgress(mViewPager.getCurrentItem());
+                reader.saveProgress(mViewPager.getCurrentItem());
             } catch (ReadingException e) {
                 e.printStackTrace();
                 Toast.makeText(ReadActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
