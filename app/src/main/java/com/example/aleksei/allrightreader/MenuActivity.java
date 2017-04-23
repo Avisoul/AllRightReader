@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -22,13 +23,19 @@ import com.github.mertakdut.exception.ReadingException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+
 /**
  * Created by Evgenia on 22.04.2017.
  */
 
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 public class MenuActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
@@ -101,7 +108,12 @@ public class MenuActivity extends AppCompatActivity {
 
         @Override
         protected List<BookInfo> doInBackground(Object... params) {
-            List<BookInfo> bookInfoList = searchForPdfFiles();
+            List<BookInfo> bookInfoList = null;
+            try {
+                bookInfoList = searchForPdfFiles();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             Reader reader = new Reader();
             for (BookInfo bookInfo : bookInfoList) {
@@ -137,12 +149,12 @@ public class MenuActivity extends AppCompatActivity {
             }
 
             if (occuredException != null) {
-                Toast.makeText(MenuActivity.this, occuredException.getMessage(), Toast.LENGTH_LONG).show();
+                System.out.println(occuredException.getMessage());
             }
         }
     }
 
-    private List<BookInfo> searchForPdfFiles() {
+    private List<BookInfo> searchForPdfFiles() throws IOException {
         boolean isSDPresent = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
 
         List<BookInfo> bookInfoList = null;
@@ -151,13 +163,17 @@ public class MenuActivity extends AppCompatActivity {
             bookInfoList = new ArrayList<>();
 
             List<File> files = getListFiles(new File(Environment.getExternalStorageDirectory().getAbsolutePath()));
+            String[] asset_files = getAssets().list("");
 
-            File sampleFile = getFileFromAssets("pg28885-images_new.epub");
-            files.add(0, sampleFile);
-            File sampleFile2 = getFileFromAssets("PhysicsSyllabus.epub");
-            files.add(1, sampleFile2);
-            File sampleFile3 = getFileFromAssets("The Silver Chair.epub");
-            files.add(2,sampleFile3);
+            if (asset_files != null) {
+                for (String file : asset_files) {
+                    String extention = file.substring(file.lastIndexOf(".") + 1, file.length());
+                    if(extention.equals("epub")) {
+                        files.add(getFileFromAssets(file));
+                    }
+                }
+            }
+
             for (File file : files) {
                 BookInfo bookInfo = new BookInfo();
 
@@ -195,11 +211,8 @@ public class MenuActivity extends AppCompatActivity {
 
     private List<File> getListFiles(File parentDir) {
         ArrayList<File> inFiles = new ArrayList<>();
-        File[] files = parentDir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(".epub");
-            }
-        });
+
+        File[] files = parentDir.listFiles();
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
@@ -213,4 +226,5 @@ public class MenuActivity extends AppCompatActivity {
         }
         return inFiles;
     }
+
 }
