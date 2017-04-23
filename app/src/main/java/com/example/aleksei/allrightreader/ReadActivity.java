@@ -1,26 +1,37 @@
 package com.example.aleksei.allrightreader;
-
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.StringBuilderPrinter;
+import android.text.Html;
+import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.example.aleksei.allrightreader.BookManager.PageFragment;
 import com.github.mertakdut.BookSection;
 import com.github.mertakdut.CssStatus;
 import com.github.mertakdut.Reader;
 import com.github.mertakdut.exception.OutOfPagesException;
 import com.github.mertakdut.exception.ReadingException;
+
+import static android.text.Html.FROM_HTML_MODE_COMPACT;
 
 public class ReadActivity extends AppCompatActivity implements PageFragment.OnFragmentReadyListener {
 
@@ -52,7 +63,6 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_read);
-//            getActionBar().hide();
 
             progressTextview = (TextView)findViewById(R.id.progess_textview);
             percentageTextview = (TextView)findViewById(R.id.percentage_textview);
@@ -73,13 +83,13 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
 
                     // Setting optionals once per file is enough.
                     reader.setMaxContentPerSection(950);
-                    reader.setCssStatus(CssStatus.INCLUDE);
+                    reader.setCssStatus(CssStatus.OMIT);
                     reader.setIsIncludingTextContent(true);
                     reader.setIsOmittingTitleTag(true);
 
-
                     // This method must be called before readSection.
                     reader.setFullContent(filePath);
+
 
 //                int lastSavedPage = reader.setFullContentWithProgress(filePath);
                     if (reader.isSavedProgressFound()) {
@@ -100,6 +110,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                 } catch (ReadingException e) {
                     e.printStackTrace();
                 }
+
                 pageControl.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     int progressChanged = 0;
                     @Override
@@ -159,6 +170,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
             return maxPageNumber;
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public View onFragmentReady(int position) {
 
@@ -169,6 +181,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                 progressTextview.setText(getProgress(mViewPager.getCurrentItem()));
                 percentageTextview.setText(getPercentage(mViewPager.getCurrentItem()));
                 pageControl.setProgress(mViewPager.getCurrentItem());
+                reader.saveProgress(mViewPager.getCurrentItem());
             } catch (ReadingException e) {
                 e.printStackTrace();
                 Toast.makeText(ReadActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
@@ -186,7 +199,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
             isSkippedToPage = false;
 
             if (bookSection != null) {
-                return setFragmentView(bookSection.getSectionContent(), "text/html", "UTF-8"); // reader.isContentStyled
+                 return setFragmentView(bookSection.getSectionContent(), "text/html", "UTF-8"); // reader.isContentStyled
             }
 
             return null;
@@ -213,17 +226,54 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
         }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private View setFragmentView(String data, String mimeType, String encoding) {
 
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        boolean isContentStyled = false;
+        if (isContentStyled) {
+            WebView webView = new WebView(ReadActivity.this);
+            webView.loadDataWithBaseURL(null, data, mimeType, encoding, null);
 
-        WebView webView = new WebView(ReadActivity.this);
-        webView.loadDataWithBaseURL(null, data, mimeType, encoding, null);
+            webView.setLayoutParams(layoutParams);
+
+            return webView;
+        } else {
+            ScrollView scrollView = new ScrollView(ReadActivity.this);
+            scrollView.setLayoutParams(layoutParams);
+
+            TextView textView = new TextView(ReadActivity.this);
+            textView.setLayoutParams(layoutParams);
+            textView.setLinksClickable(true);
+            textView.setTextSize(18);
 
 
-        webView.setLayoutParams(layoutParams);
+            textView.setText(Html.fromHtml(data, FROM_HTML_MODE_COMPACT,new Html.ImageGetter() {
+                @Override
+                public Drawable getDrawable(String source) {
+                    String imageAsStr = source.substring(source.indexOf(";base64,") + 8);
+                    byte[] imageAsBytes = Base64.decode(imageAsStr, Base64.DEFAULT);
+                    Bitmap imageAsBitmap = BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length);
 
-        return webView;
+                    int imageWidthStartPx = (pxScreenWidth - imageAsBitmap.getWidth()) / 2;
+                    int imageWidthEndPx = pxScreenWidth - imageWidthStartPx;
+
+                    Drawable imageAsDrawable = new BitmapDrawable(getResources(), imageAsBitmap);
+                    imageAsDrawable.setBounds(imageWidthStartPx, 0, imageWidthEndPx, imageAsBitmap.getHeight());
+                    return imageAsDrawable;
+                }
+            }, null));
+
+            int dp = 12;
+            DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+            int pxPadding = Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+
+
+            textView.setPadding(pxPadding, pxPadding, pxPadding, pxPadding);
+
+            scrollView.addView(textView);
+            return scrollView;
+        }
     }
 
 

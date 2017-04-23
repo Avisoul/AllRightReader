@@ -3,12 +3,13 @@ package com.example.aleksei.allrightreader;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,12 +17,14 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
+import com.example.aleksei.allrightreader.BookManager.BookInfo;
+import com.example.aleksei.allrightreader.BookManager.BookInfoGridAdapter;
 import com.example.aleksei.allrightreader.FileManager.DownloadFileActivity;
 import com.github.mertakdut.Reader;
 import com.github.mertakdut.exception.ReadingException;
 
+import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -33,9 +36,16 @@ import java.util.List;
  * Created by Evgenia on 22.04.2017.
  */
 
+@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
 public class MenuActivity extends AppCompatActivity {
 
+    //Permissions
+    final String[] EXTERNAL_PERMS = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE};
+    final int EXTERNAL_REQUEST = 138;
+
     private ProgressBar progressBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,14 +77,10 @@ public class MenuActivity extends AppCompatActivity {
         new ListBookInfoTask().execute();
     }
 
-    final String[] EXTERNAL_PERMS = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE
-    };
 
-    final int EXTERNAL_REQUEST = 138;
     @Override
     protected void onResume() {
         super.onResume();
-
         requestForPermission();
     }
 
@@ -105,6 +111,7 @@ public class MenuActivity extends AppCompatActivity {
     private class ListBookInfoTask extends AsyncTask<Object, Object, List<BookInfo>> {
 
         private Exception occuredException;
+        private FileManager fileManager = new FileManager(MenuActivity.this);
 
         @Override
         protected void onPreExecute() {
@@ -114,7 +121,12 @@ public class MenuActivity extends AppCompatActivity {
 
         @Override
         protected List<BookInfo> doInBackground(Object... params) {
-            List<BookInfo> bookInfoList = searchForPdfFiles();
+            List<BookInfo> bookInfoList = null;
+            try {
+                bookInfoList = fileManager.searchForEpubFiles();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             Reader reader = new Reader();
             for (BookInfo bookInfo : bookInfoList) {
@@ -150,81 +162,10 @@ public class MenuActivity extends AppCompatActivity {
             }
 
             if (occuredException != null) {
-                Toast.makeText(MenuActivity.this, occuredException.getMessage(), Toast.LENGTH_LONG).show();
+                System.out.println(occuredException.getMessage());
             }
         }
     }
 
-    private List<BookInfo> searchForPdfFiles() {
-        boolean isSDPresent = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
 
-        List<BookInfo> bookInfoList = null;
-
-        if (isSDPresent) {
-            bookInfoList = new ArrayList<>();
-
-            List<File> files = getListFiles(new File(Environment.getExternalStorageDirectory().getAbsolutePath()));
-
-            File sampleFile = getFileFromAssets("pg28885-images_new.epub");
-            files.add(0, sampleFile);
-            File sampleFile2 = getFileFromAssets("PhysicsSyllabus.epub");
-            files.add(1, sampleFile2);
-            File sampleFile3 = getFileFromAssets("The Silver Chair.epub");
-            files.add(2,sampleFile3);
-
-            for (File file : files) {
-                BookInfo bookInfo = new BookInfo();
-
-                bookInfo.setTitle(file.getName());
-                bookInfo.setFilePath(file.getPath());
-
-                bookInfoList.add(bookInfo);
-            }
-        }
-
-        return bookInfoList;
-    }
-
-    public File getFileFromAssets(String fileName) {
-
-        File file = new File(getCacheDir() + "/" + fileName);
-
-        if (!file.exists()) try {
-
-            InputStream is = getAssets().open(fileName);
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(buffer);
-            fos.close();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return file;
-    }
-
-    private List<File> getListFiles(File parentDir) {
-        ArrayList<File> inFiles = new ArrayList<>();
-        File[] files = parentDir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(".epub");
-            }
-        });
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    inFiles.addAll(getListFiles(file));
-                } else {
-                    if (file.getName().endsWith(".epub")) {
-                        inFiles.add(file);
-                    }
-                }
-            }
-        }
-        return inFiles;
-    }
 }

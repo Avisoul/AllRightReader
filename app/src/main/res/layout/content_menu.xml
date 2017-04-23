@@ -14,7 +14,8 @@
         android:id="@+id/progressbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        />
 
     <Button
         android:id="@+id/download_from_cloud"
@@ -27,7 +28,8 @@
         android:layout_below="@id/download_from_cloud"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:numColumns="2"
+        android:numColumns="3"
+        android:scrollbars="horizontal"
         android:stretchMode="columnWidth" />
 
 </RelativeLayout>
