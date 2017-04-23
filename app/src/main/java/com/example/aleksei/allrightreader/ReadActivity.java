@@ -5,6 +5,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.StringBuilderPrinter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -40,6 +41,9 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
         private int pageCount = Integer.MAX_VALUE;
         private int pxScreenWidth;
         private TextView progressTextview;
+        private TextView percentageTextview;
+
+
 
         private boolean isSkippedToPage = false;
 
@@ -50,6 +54,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
 //            getActionBar().hide();
 
             progressTextview = (TextView)findViewById(R.id.progess_textview);
+            percentageTextview = (TextView)findViewById(R.id.percentage_textview);
 
             pxScreenWidth = getResources().getDisplayMetrics().widthPixels;
 
@@ -66,7 +71,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                     reader = new Reader();
 
                     // Setting optionals once per file is enough.
-                    reader.setMaxContentPerSection(1250);
+                    reader.setMaxContentPerSection(950);
                     reader.setCssStatus(CssStatus.INCLUDE);
                     reader.setIsIncludingTextContent(true);
                     reader.setIsOmittingTitleTag(true);
@@ -86,10 +91,11 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                 }
 
                 pageControl = (SeekBar) findViewById(R.id.seek_bar);
-                pageControl.setMax(getMaxPageNumber()-1);
+                pageControl.setMax(getMaxPageNumber());
                 try {
                     pageControl.setProgress(reader.loadProgress());
-                    progressTextview.setText(String.valueOf(reader.loadProgress()));
+                    progressTextview.setText(getProgress(reader.loadProgress()));
+                    percentageTextview.setText(getPercentage(reader.loadProgress()));
                 } catch (ReadingException e) {
                     e.printStackTrace();
                 }
@@ -97,8 +103,9 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                     int progressChanged = 0;
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                         progressChanged = progress;
-                        progressTextview.setText(String.valueOf(progressChanged));
+                        progressChanged = progress;
+                        progressTextview.setText(getProgress(progressChanged));
+                        percentageTextview.setText(getPercentage(progressChanged));
                     }
 
                     @Override
@@ -110,11 +117,29 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                     public void onStopTrackingTouch(SeekBar seekBar) {
                         //Toast.makeText(ReadActivity.this, String.valueOf(progressChanged), Toast.LENGTH_SHORT).show();
                         mViewPager.setCurrentItem(progressChanged);
-                        progressTextview.setText(String.valueOf(mViewPager.getCurrentItem()));
+                        progressTextview.setText(getProgress(mViewPager.getCurrentItem()));
+                        percentageTextview.setText(getPercentage(mViewPager.getCurrentItem()));
                         pageControl.setProgress(mViewPager.getCurrentItem());
+                        pageControl.setMax(getMaxPageNumber());
                     }
                 });
             }
+        }
+
+        private String getPercentage(int count) {
+            StringBuilder sb = new StringBuilder();
+            double percentage = Math.round(((double)count * 10000)/((double)getMaxPageNumber()))/100;
+            sb.append(String.valueOf(percentage));
+            sb.append(" %");
+            return  sb.toString();
+        }
+
+        private String getProgress(int count){
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.valueOf(count));
+            sb.append("/");
+            sb.append(String.valueOf(getMaxPageNumber()));
+            return  sb.toString();
         }
 
         private int getMaxPageNumber() {
@@ -123,7 +148,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
                 BookSection bookSection = reader.readSection(Integer.MAX_VALUE);
             } catch (OutOfPagesException e) {
                 e.printStackTrace();
-                maxPageNumber = e.getPageCount();
+                maxPageNumber = e.getPageCount() - 1;
             } catch (Exception e) {
             }
             return maxPageNumber;
@@ -136,7 +161,8 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
 
             try {
                 bookSection = reader.readSection(position);
-                progressTextview.setText(String.valueOf(mViewPager.getCurrentItem()));
+                progressTextview.setText(getProgress(mViewPager.getCurrentItem()));
+                percentageTextview.setText(getPercentage(mViewPager.getCurrentItem()));
                 pageControl.setProgress(mViewPager.getCurrentItem());
             } catch (ReadingException e) {
                 e.printStackTrace();
