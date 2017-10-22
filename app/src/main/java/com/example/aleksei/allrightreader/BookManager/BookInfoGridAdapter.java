@@ -1,17 +1,23 @@
 package com.example.aleksei.allrightreader.BookManager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.aleksei.allrightreader.BookManager.BookInfo;
 import com.example.aleksei.allrightreader.R;
+
+import com.example.aleksei.allrightreader.FileManager.FileManager;
+import com.example.aleksei.allrightreader.ReadActivity;
+import com.example.aleksei.allrightreader.FileManager.UploadFileActivity;
 
 import java.util.List;
 
@@ -32,6 +38,7 @@ public class BookInfoGridAdapter extends BaseAdapter {
     private final class ViewHolder {
         public TextView title;
         public ImageView coverImage;
+        public Button upload;
     }
 
     @Override
@@ -50,7 +57,7 @@ public class BookInfoGridAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
 
         if (convertView == null) {
@@ -60,7 +67,7 @@ public class BookInfoGridAdapter extends BaseAdapter {
             viewHolder = new ViewHolder();
             viewHolder.title = (TextView) convertView.findViewById(R.id.txt_book_title);
             viewHolder.coverImage = (ImageView) convertView.findViewById(R.id.img_cover);
-
+            viewHolder.upload = (Button) convertView.findViewById(R.id.upload_to_cloud);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -93,6 +100,28 @@ public class BookInfoGridAdapter extends BaseAdapter {
         } else { // Searched before and not found.
             viewHolder.coverImage.setImageResource(R.drawable.default_book);
         }
+
+        viewHolder.upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String clickedItemFilePath = ((BookInfo) getItem(position)).getFilePath();
+                final Intent intent = new Intent(context, UploadFileActivity.class);
+                intent.putExtra("filePath", clickedItemFilePath);
+                context.startActivity(intent);
+            }
+        });
+
+        viewHolder.coverImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String clickedItemFilePath = ((BookInfo) getItem(position)).getFilePath();
+                final Intent intent = new Intent(context, ReadActivity.class);
+                intent.putExtra("filePath", clickedItemFilePath);
+                intent.putExtra("isWebView", true);
+
+                context.startActivity(intent);
+            }
+        });
 
         return convertView;
     }

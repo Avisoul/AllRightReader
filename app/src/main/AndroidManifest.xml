@@ -23,7 +23,15 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".FileManager.FileManager" />
+        <activity
+            android:name=".FileManager.DownloadFileActivity">
+        </activity>
+        <activity
+            android:name=".FileManager.UploadFileActivity">
+        </activity>
+        <activity
+            android:name=".FileManager.FileManager">
+        </activity>
     </application>
 
 </manifest>

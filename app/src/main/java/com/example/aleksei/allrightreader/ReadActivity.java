@@ -14,6 +14,9 @@ import android.os.Bundle;
 import android.text.Html;
 import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -37,6 +40,7 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
 
         private Reader reader;
         private SeekBar pageControl = null;
+        int fontSize = 50;
 
         private ViewPager mViewPager;
 
@@ -242,10 +246,10 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
             ScrollView scrollView = new ScrollView(ReadActivity.this);
             scrollView.setLayoutParams(layoutParams);
 
-            TextView textView = new TextView(ReadActivity.this);
+            final TextView textView = new TextView(ReadActivity.this);
             textView.setLayoutParams(layoutParams);
             textView.setLinksClickable(true);
-            textView.setTextSize(18);
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
 
 
             textView.setText(Html.fromHtml(data, FROM_HTML_MODE_COMPACT,new Html.ImageGetter() {
@@ -270,6 +274,42 @@ public class ReadActivity extends AppCompatActivity implements PageFragment.OnFr
 
 
             textView.setPadding(pxPadding, pxPadding, pxPadding, pxPadding);
+
+            final ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.OnScaleGestureListener() {
+
+                @Override
+                public boolean onScale(ScaleGestureDetector detector) {
+                    float size = textView.getTextSize();
+
+                    float factor = detector.getScaleFactor();
+
+                    fontSize = (int)(size*factor);
+
+                    textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize);
+                    textView.invalidate();
+
+                    return true;
+                }
+
+                @Override
+                public boolean onScaleBegin(ScaleGestureDetector detector) {
+                    return true;
+                }
+
+                @Override
+                public void onScaleEnd(ScaleGestureDetector detector) {
+
+                }
+            });
+
+            View.OnTouchListener listener = new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return scaleGestureDetector.onTouchEvent(event);
+                }
+            };
+
+            textView.setOnTouchListener(listener);
 
             scrollView.addView(textView);
             return scrollView;
